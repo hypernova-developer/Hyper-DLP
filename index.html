@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { background: #0d0d0d; color: #ff0000; font-family: 'Consolas', monospace; padding: 20px; text-align: center; }
+        .box { border: 2px solid #ff0000; padding: 20px; background: #000; box-shadow: 0 0 15px #ff000033; }
+        input, select, button { background: #000; border: 1px solid #ff0000; color: #fff; padding: 12px; margin: 10px 0; width: 100%; box-sizing: border-box; }
+        button { background: #ff0000; color: #000; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #fff; color: #ff0000; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        #status { font-size: 0.8rem; color: #00ff00; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>HYPER-DLP COMMAND</h2>
+        <input type="text" id="urlInput" placeholder="TARGET URL">
+        <div style="display:flex; gap:10px">
+            <input type="text" id="pathInput" placeholder="DOWNLOAD DIRECTORY" readonly>
+            <button style="width:120px" onclick="chooseFolder()">BROWSE</button>
+        </div>
+        <div class="grid">
+            <select id="type"><option value="video">VIDEO</option><option value="audio">AUDIO</option></select>
+            <select id="quality"><option value="best">BEST</option><option value="1080p">1080P</option><option value="720p">720P</option></select>
+            <select id="format"><option value="best">AUTO</option><option value="mp4">MP4</option><option value="mp3">MP3</option></select>
+        </div>
+        <button onclick="startDownload()">LAUNCH DOWNLOAD</button>
+        <div id="status">READY FOR ACTION</div>
+    </div>
+    <script>
+        let path = "";
+        function chooseFolder() {
+            pywebview.api.select_folder().then(res => { if(res) { path = res; document.getElementById('pathInput').value = res; }});
+        }
+        function startDownload() {
+            const url = document.getElementById('urlInput').value;
+            const t = document.getElementById('type').value;
+            const q = document.getElementById('quality').value;
+            const f = document.getElementById('format').value;
+            if(!path) { alert("Select Path!"); return; }
+            pywebview.api.download(url, t, q, f, true, path).then(res => {
+                document.getElementById('status').innerHTML = res.message;
+            });
+        }
+    </script>
+</body>
+</html>
